@@ -1,8 +1,8 @@
 [
     {
     "icon": "LaptopCode",
-    "name": "research Homepage",
-    "link": "https://reseach.tosania.top"
+    "name": "学术简洁",
+    "link": "https://research.tosania.top"
   },
   {
     "icon": "Blog",
@@ -15,9 +15,9 @@
     "link": "https://shencys.github.io/"
   },
   {
-    "icon": "Blog",
-    "name": "博客(已故2)",
-    "link": "https://Tosania2.github.io/"
+    "icon": "LaptopCode",
+    "name": "谷歌学术",
+    "link": "https://scholar.google.com/citations?user=HMBC-rYAAAAJ&hl=zh-CN&oi=ao"
   },
   {
     "icon": "LaptopCode",
