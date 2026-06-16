@@ -14,7 +14,7 @@
       <el-col :span="12" class="left">
         <div class="logo text-hidden">
           <span class="bg">{{ siteUrl[0] }}</span>
-          <span class="sm">.{{ siteUrl[1] }}</span>
+          <span v-if="siteUrl[1]" class="sm">.{{ siteUrl[1] }}</span>
         </div>
         <div class="version">
           <div class="num">v&nbsp;{{ config.version }}</div>
@@ -63,7 +63,7 @@ const closeShow = ref(false);
 // 站点链接
 const siteUrl = computed(() => {
   const url = import.meta.env.VITE_SITE_URL;
-  if (!url) return "imsyy.top".split(".");
+  if (!url) return "tosania.top".split(".");
   // 判断协议前缀
   if (url.startsWith("http://") || url.startsWith("https://")) {
     const urlFormat = url.replace(/^(https?:\/\/)/, "");
@@ -132,34 +132,37 @@ const jumpTo = (url) => {
 
       .logo {
         transform: translateY(-8%);
-        font-family: "Pacifico-Regular";
+        font-family: Palatino, "Palatino Linotype", Garamond, Baskerville, Georgia, "Songti SC", serif;
+        font-weight: 500;
+        font-style: italic;
+        letter-spacing: 0.015em;
         padding-left: 22px;
         width: 100%;
         height: 260px;
         min-height: 140px;
         .bg {
-          font-size: 5rem;
+          font-size: 4.2rem;
         }
 
         .sm {
           margin-left: 6px;
-          font-size: 2rem;
+          font-size: 1.55rem;
         }
 
         @media (max-width: 990px) {
           .bg {
-            font-size: 4.5rem;
+            font-size: 3.8rem;
           }
           .sm {
-            font-size: 1.7rem;
+            font-size: 1.4rem;
           }
         }
         @media (max-width: 825px) {
           .bg {
-            font-size: 3.8rem;
+            font-size: 3.3rem;
           }
           .sm {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
           }
         }
       }
@@ -171,7 +174,9 @@ const jumpTo = (url) => {
 
         .num {
           font-size: 2rem;
-          font-family: "Pacifico-Regular";
+          font-family: Georgia, "Times New Roman", "Noto Serif", "Songti SC", serif;
+          font-weight: 700;
+          letter-spacing: 0.02em;
         }
 
         .github {

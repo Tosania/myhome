@@ -3,7 +3,7 @@
     <!-- 移动端 Logo -->
     <div class="logo text-hidden" @click="store.mobileFuncState = !store.mobileFuncState">
       <span class="bg">{{ siteUrl[0] }}</span>
-      <span class="sm">.{{ siteUrl[1] }}</span>
+      <span v-if="siteUrl[1]" class="sm">.{{ siteUrl[1] }}</span>
     </div>
     <!-- 功能区 -->
     <Func />
@@ -21,7 +21,7 @@ const store = mainStore();
 // 站点链接
 const siteUrl = computed(() => {
   const url = import.meta.env.VITE_SITE_URL;
-  if (!url) return "imsyy.top".split(".");
+  if (!url) return "tosania.top".split(".");
   // 判断协议前缀
   if (url.startsWith("http://") || url.startsWith("https://")) {
     const urlFormat = url.replace(/^(https?:\/\/)/, "");
@@ -38,8 +38,12 @@ const siteUrl = computed(() => {
   margin-left: 0.75rem;
   .logo {
     width: 100%;
-    font-family: "Pacifico-Regular";
-    font-size: 2.25rem;
+    font-family: Palatino, "Palatino Linotype", Garamond, Baskerville, Georgia, "Songti SC", serif;
+    font-weight: 500;
+    font-style: italic;
+    letter-spacing: 0.015em;
+    text-shadow: 0 4px 16px rgb(0 0 0 / 32%);
+    font-size: 2rem;
     position: fixed;
     top: 6%;
     left: 0;

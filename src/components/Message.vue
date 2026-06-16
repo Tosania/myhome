@@ -6,7 +6,7 @@
       <img class="logo-img" :src="siteLogo" alt="logo" />
       <div :class="{ name: true, 'text-hidden': true, long: siteUrl[0].length >= 6 }">
         <span class="bg">{{ siteUrl[0] }}</span>
-        <span class="sm">.{{ siteUrl[1] }}</span>
+        <span v-if="siteUrl[1]" class="sm">.{{ siteUrl[1] }}</span>
       </div>
     </div>
     <!-- 简介 -->
@@ -41,7 +41,7 @@ const siteLogo = import.meta.env.VITE_SITE_MAIN_LOGO;
 // 站点链接
 const siteUrl = computed(() => {
   const url = import.meta.env.VITE_SITE_URL;
-  if (!url) return "imsyy.top".split(".");
+  if (!url) return "tosania.top".split(".");
   // 判断协议前缀
   if (url.startsWith("http://") || url.startsWith("https://")) {
     const urlFormat = url.replace(/^(https?:\/\/)/, "");
@@ -103,15 +103,23 @@ watch(
       width: 100%;
       padding-left: 22px;
       transform: translateY(-8px);
-      font-family: "Pacifico-Regular";
+      font-family: Palatino, "Palatino Linotype", Garamond, Baskerville, Georgia, "Songti SC", serif;
+      font-weight: 500;
+      letter-spacing: 0.015em;
 
       .bg {
-        font-size: 5rem;
+        font-size: 4.2rem;
+        line-height: 1;
+        font-style: italic;
+        text-shadow: 0 4px 16px rgb(0 0 0 / 32%);
       }
 
       .sm {
         margin-left: 6px;
-        font-size: 2rem;
+        font-size: 1.55rem;
+        font-weight: 500;
+        font-style: italic;
+        opacity: 0.9;
         @media (min-width: 721px) and (max-width: 789px) {
           display: none;
         }
@@ -124,7 +132,7 @@ watch(
       .name {
         height: 128px;
         .bg {
-          font-size: 4.5rem;
+          font-size: 3.8rem;
         }
       }
     }
@@ -152,7 +160,10 @@ watch(
 
         p {
           &:nth-of-type(1) {
-            font-family: "Pacifico-Regular";
+            font-family: Georgia, "Times New Roman", "Noto Serif", "Songti SC", serif;
+            font-style: italic;
+            font-weight: 600;
+            letter-spacing: 0.02em;
           }
         }
       }

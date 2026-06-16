@@ -13,17 +13,19 @@
     <span class="sm-hidden">{{ weatherData.weather.windpower }}&nbsp;级</span>
   </div>
   <div class="weather" v-else>
-    <span>天气数据获取失败</span>
+    <span>{{ weatherStatus.message }}</span>
   </div>
 </template>
 
 <script setup>
-import { getAdcode, getWeather, getOtherWeather } from "@/api";
+import { getAdcode, getAmapGeocode, getWeather, getOtherWeather } from "@/api";
 import { Error } from "@icon-park/vue-next";
 
 // 高德开发者 Key
-
 const mainKey = import.meta.env.VITE_WEATHER_KEY;
+const configuredCity = import.meta.env.VITE_WEATHER_CITY?.trim();
+const WEATHER_CACHE_KEY = "tosania-weather-cache";
+const WEATHER_CACHE_MAX_AGE = 1000 * 60 * 30;
 
 // 天气数据
 const weatherData = reactive({
@@ -39,6 +41,10 @@ const weatherData = reactive({
   },
 });
 
+const weatherStatus = reactive({
+  message: "天气加载中",
+});
+
 // 取出天气平均值
 const getTemperature = (min, max) => {
   try {
@@ -51,48 +57,138 @@ const getTemperature = (min, max) => {
   }
 };
 
+const setWeatherData = ({ city, adcode, weather, temperature, winddirection, windpower }) => {
+  weatherData.adCode = {
+    city: city || "未知地区",
+    adcode: adcode || null,
+  };
+  weatherData.weather = {
+    weather,
+    temperature,
+    winddirection,
+    windpower,
+  };
+};
+
+const saveWeatherCache = () => {
+  localStorage.setItem(
+    WEATHER_CACHE_KEY,
+    JSON.stringify({
+      timestamp: Date.now(),
+      data: {
+        city: weatherData.adCode.city,
+        adcode: weatherData.adCode.adcode,
+        ...weatherData.weather,
+      },
+    }),
+  );
+};
+
+const loadWeatherCache = () => {
+  try {
+    const cache = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY));
+    if (!cache?.data || Date.now() - cache.timestamp > WEATHER_CACHE_MAX_AGE) return false;
+    setWeatherData(cache.data);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const assertWeather = (data) => {
+  const temperature = Number(data?.temperature);
+  if (
+    !data?.weather ||
+    data.temperature === undefined ||
+    data.temperature === null ||
+    Number.isNaN(temperature)
+  ) {
+    throw new Error("天气数据不完整");
+  }
+  return data;
+};
+
+const normalizeAmapWeather = (result, city, adcode) => {
+  if (result?.infocode !== "10000" || !result?.lives?.[0]) {
+    throw new Error(result?.info || "高德天气查询失败");
+  }
+  const live = result.lives[0];
+  return assertWeather({
+    city: city || live.city,
+    adcode: adcode || live.adcode,
+    weather: live.weather,
+    temperature: live.temperature,
+    winddirection: live.winddirection,
+    windpower: live.windpower,
+  });
+};
+
+const getCityAdcode = async (city) => {
+  const result = await getAmapGeocode(mainKey, city);
+  const geocode = result?.geocodes?.[0];
+  if (result?.infocode !== "10000" || !geocode?.adcode) {
+    throw new Error(result?.info || "城市编码查询失败");
+  }
+  return {
+    city: Array.isArray(geocode.city) ? geocode.province : geocode.city || geocode.province || city,
+    adcode: geocode.adcode,
+  };
+};
+
+const getAmapWeatherByConfiguredCity = async () => {
+  const location = await getCityAdcode(configuredCity);
+  const result = await getWeather(mainKey, location.adcode);
+  return normalizeAmapWeather(result, location.city, location.adcode);
+};
+
+const getAmapWeatherByIp = async () => {
+  const adCode = await getAdcode(mainKey);
+  if (adCode?.infocode !== "10000" || !adCode?.adcode) {
+    throw new Error(adCode?.info || "IP 地区查询失败");
+  }
+  const result = await getWeather(mainKey, adCode.adcode);
+  return normalizeAmapWeather(result, adCode.city, adCode.adcode);
+};
+
+const normalizeOtherWeather = (result) => {
+  const data = result?.result;
+  const city = data?.city?.City || data?.city?.city || configuredCity || "未知地区";
+  const condition = data?.condition || {};
+  return assertWeather({
+    city,
+    adcode: data?.city?.cityId,
+    weather: condition.day_weather || condition.weather,
+    temperature:
+      condition.degree ?? getTemperature(condition.min_degree, condition.max_degree),
+    winddirection: condition.day_wind_direction || condition.wind_direction,
+    windpower: condition.day_wind_power || condition.wind_power,
+  });
+};
+
 // 获取天气数据
 const getWeatherData = async () => {
+  const hasCache = loadWeatherCache();
+  const providers = [];
+  if (mainKey && configuredCity) providers.push(getAmapWeatherByConfiguredCity);
+  if (mainKey) providers.push(getAmapWeatherByIp);
+  providers.push(async () => normalizeOtherWeather(await getOtherWeather()));
+
   try {
-    // 获取地理位置信息
-    if (!mainKey) {
-      console.log("未配置，使用备用天气接口");
-      const result = await getOtherWeather();
-      console.log(result);
-      const data = result.result;
-      weatherData.adCode = {
-        city: data.city.City || "未知地区",
-        // adcode: data.city.cityId,
-      };
-      weatherData.weather = {
-        weather: data.condition.day_weather,
-        temperature: getTemperature(data.condition.min_degree, data.condition.max_degree),
-        winddirection: data.condition.day_wind_direction,
-        windpower: data.condition.day_wind_power,
-      };
-    } else {
-      // 获取 Adcode
-      const adCode = await getAdcode(mainKey);
-      console.log(adCode);
-      if (adCode.infocode !== "10000") {
-        throw "地区查询失败";
+    for (const provider of providers) {
+      try {
+        const data = await provider();
+        setWeatherData(data);
+        saveWeatherCache();
+        return;
+      } catch (error) {
+        console.warn("天气接口尝试失败:", error);
       }
-      weatherData.adCode = {
-        city: adCode.city,
-        adcode: adCode.adcode,
-      };
-      // 获取天气信息
-      const result = await getWeather(mainKey, weatherData.adCode.adcode);
-      weatherData.weather = {
-        weather: result.lives[0].weather,
-        temperature: result.lives[0].temperature,
-        winddirection: result.lives[0].winddirection,
-        windpower: result.lives[0].windpower,
-      };
     }
+    throw new Error("全部天气接口均不可用");
   } catch (error) {
-    console.error("天气信息获取失败:" + error);
-    onError("天气信息获取失败");
+    console.error("天气信息获取失败:", error);
+    weatherStatus.message = hasCache ? "天气数据暂未更新" : "天气数据暂不可用";
+    if (!hasCache) onError("天气信息获取失败");
   }
 };
 

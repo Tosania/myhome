@@ -55,13 +55,24 @@ export const getHitokoto = async () => {
 
 // 获取高德地理位置信息
 export const getAdcode = async (key) => {
-  const res = await fetch(`https://restapi.amap.com/v3/ip?key=${key}`);
+  const res = await fetchWithTimeout(`https://restapi.amap.com/v3/ip?key=${key}`);
+  return await res.json();
+};
+
+// 通过城市名获取高德地理编码
+export const getAmapGeocode = async (key, city) => {
+  const params = new URLSearchParams({
+    key,
+    address: city,
+    city,
+  });
+  const res = await fetchWithTimeout(`https://restapi.amap.com/v3/geocode/geo?${params}`);
   return await res.json();
 };
 
 // 获取高德地理天气信息
 export const getWeather = async (key, city) => {
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `https://restapi.amap.com/v3/weather/weatherInfo?key=${key}&city=${city}`,
   );
   return await res.json();
@@ -70,6 +81,19 @@ export const getWeather = async (key, city) => {
 // 获取教书先生天气 API
 // https://api.oioweb.cn/doc/weather/GetWeather
 export const getOtherWeather = async () => {
-  const res = await fetch("https://api.oioweb.cn/api/weather/GetWeather");
+  const res = await fetchWithTimeout("https://api.oioweb.cn/api/weather/GetWeather");
   return await res.json();
+};
+
+const fetchWithTimeout = async (url, options = {}, timeout = 6000) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 };

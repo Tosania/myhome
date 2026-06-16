@@ -1,21 +1,9 @@
 [
   {
-    "name": "Github",
-    "icon": "/images/icon/github.png",
-    "tip": "Github1",
-    "url": "https://github.com/Tosaniat"
-  },
-  {
-    "name": "Github2",
-    "icon": "/images/icon/github.png",
-    "tip": "Github2",
-    "url": "https://github.com/shencys"
-  },
-   {
-    "name": "Github3",
-    "icon": "/images/icon/github.png",
-    "tip": "Github3",
-    "url": "https://github.com/tosania"
+    "name": "Email",
+    "icon": "/images/icon/email.png",
+    "tip": "Email me",
+    "url": "Tosania@163.com"
   },
   {
     "name": "BiliBili",
@@ -24,15 +12,15 @@
     "url": "https://space.bilibili.com/272258200"
   },
   {
-    "name": "Email",
-    "icon": "/images/icon/email.png",
-    "tip": "Email me",
-    "url": "1587775166@qq,com"
+    "name": "QQ",
+    "icon": "/images/icon/qq.png",
+    "tip": "Q me",
+    "url": "1587775166"
   },
   {
-    "name": "zhihu",
-    "icon": "/images/icon/zhihu.png",
-    "tip": "知乎主页",
-    "url": "https://www.zhihu.com/people/ban-xia-si-yue-guang"
+    "name": "Wechat",
+    "icon": "/images/icon/wechat.png",
+    "tip": "V me",
+    "url": "Tosania"
   }
 ]

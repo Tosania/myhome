@@ -1,32 +1,32 @@
 [
-    {
-    "icon": "LaptopCode",
-    "name": "学术简介",
+  {
+    "icon": "Microscope",
+    "name": "Research Page",
     "link": "https://research.tosania.top"
   },
   {
     "icon": "Blog",
-    "name": "博客",
+    "name": "Blog",
     "link": "https://blog.tosania.top/"
   },
   {
-    "icon": "Blog",
-    "name": "博客(已故)",
-    "link": "https://shencys.github.io/"
-  },
-  {
-    "icon": "LaptopCode",
-    "name": "谷歌学术",
+    "icon": "GraduationCap",
+    "name": "Google Scholar",
     "link": "https://scholar.google.com/citations?user=HMBC-rYAAAAJ&hl=zh-CN&oi=ao"
   },
   {
-    "icon": "LaptopCode",
+    "icon": "Code",
     "name": "codeforces",
     "link": "https://codeforces.com/profile/scy_alicization"
   },
   {
-    "icon": "LaptopCode",
-    "name": "codeforces2",
-    "link": "https://codeforces.com/profile/Tosania"
+    "icon": "Github",
+    "name": "Github",
+    "link": "https://github.com/Tosania"
+  },
+  {
+    "icon": "Zhihu",
+    "name": "Zhihu",
+    "link": "https://www.zhihu.com/people/ban-xia-si-yue-guang"
   }
 ]
